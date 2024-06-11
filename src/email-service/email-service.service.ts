@@ -96,6 +96,23 @@ export class EmailService {
       throw error;
     }
   }
+
+
+  async cashOut(to: string, subject: string, text: string) {
+    try {
+      const mailOptions = {
+        from: 'anahi.donnelly@ethereal.email',
+        to,
+        subject,
+        text,
+      };
+      await this.transporter.sendMail(mailOptions);
+      this.logger.log('cashout successful');
+    } catch (error) {
+      this.logger.error('Error cashing out:', error.message);
+      throw error;
+    }
+  }
   
 }
 

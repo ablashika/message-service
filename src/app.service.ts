@@ -174,5 +174,26 @@ Your Company Name`;
       throw error;
     }
   }
+
+
+  async cashOut(email: string) {
+    const subject = 'Cash Out Successfull';
+   const text = `Dear Merchant,
+   Cash-out was successful
+
+   Please feel free to reach out to us if you have any questions or if you believe this decision was made in error.
+
+   Best regards,
+   Your Company Name
+   `;
+
+  try {
+    await this.emailService.cashOut(email, subject,text);
+    this.logger.log('merchant approved successfull');
+  } catch (error) {
+    this.logger.error('merchant approval failed', error.message);
+    throw error;
+  }
+}
 }
 

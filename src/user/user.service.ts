@@ -13,10 +13,9 @@ export class UserService {
   }
 
   async createUser(email: string,  userType: string): Promise<void> {
-    // Implement user creation logic (e.g., save to database)
-    // For demonstration purposes, we assume the user is created successfully.
 
-    // Emit the user_created event
+
+    //more logic goes here, eg.connecting to db
    try{
     // this.logger.log(`User created: ${email}`);
     this.logger.log(`User created: ${email}, Type: ${userType}`);

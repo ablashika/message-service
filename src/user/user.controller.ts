@@ -15,7 +15,7 @@ export class UserController {
   async createUser(@Body('email') email: string, @Body('userType') userType: string) {
     await this.userService.createUser(email, userType);
 
-    // Determine the welcome message based on user type
+    // Determine the welcome message based on usertype
     let emailSubject = 'Account Created Successfully';
     let emailText = 'Your account has been created successfully.';
 
@@ -49,8 +49,16 @@ export class UserController {
   @Post('merchant-decline')
   async merchantDeclined(@Body('email') email: string) {
     await this.appService.merchantDeclined(email)
-    return { status: 'merchant-decline'};
+    return { status: 'merchant declined'};
   }
+
+
+  @Post('cash-out')
+  async cashout(@Body('email') email: string) {
+    await this.appService.cashOut(email)
+    return { status: 'cash out successful'};
+  }
+
 
 
   
