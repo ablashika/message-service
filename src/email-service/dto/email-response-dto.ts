@@ -8,6 +8,9 @@ export class EmailResponseDto {
   @IsString()
   messageId?: string;
 
+  @IsString()
+  message: string;
+
   @IsOptional()
   @IsString()
   error?: string;

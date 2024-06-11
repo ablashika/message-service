@@ -1,22 +1,44 @@
 
 
+# services:
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: guest
+  #     RABBITMQ_DEFAULT_PASS: guest
+
+  # email-service:
+  #   build: .
+  #   ports:
+  #     - "4000:3000"
+  #   depends_on:
+  #     - rabbitmq
+  #   environment:
+  #     - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+
+
+
 services:
-  rabbitmq:
-    image: rabbitmq:3-management
+  nats:
+    image: nats:latest
     ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      - '4222:4222'
+      - '8222:8222'
+    networks:
+      - app-network
 
-  email-service:
+  nestjs-app:
     build: .
-    ports:
-      - "4000:3000"
     depends_on:
-      - rabbitmq
+      - nats
     environment:
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      NATS_SERVER: 'nats://nats:4222'
+    networks:
+      - app-network
 
-
+networks:
+  app-network:
+    driver: bridge
