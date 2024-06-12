@@ -67,7 +67,7 @@
 //     this.natsClient = ClientProxyFactory.create({
 //       transport: Transport.NATS,
 //       options: {
-//         servers: ['nats://localhost:4222'], 
+//         servers: ['nats://localhost:'], 
 //       },
 //     });
 //     await this.natsClient.connect();
@@ -113,7 +113,7 @@ export class AppService implements OnModuleInit {
     this.natsClient = ClientProxyFactory.create({
       transport: Transport.NATS,
       options: {
-        servers: ['nats://localhost:4222'], 
+        servers: ['nats://nats:4222'], 
       },
     });
     await this.natsClient.connect();

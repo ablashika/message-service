@@ -19,22 +19,14 @@
   #   environment:
   #     - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
 
-
-
 services:
-  email-service:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-    command: ["npm", "start"]
-  
   nats:
-    image: nats:latest
+    image: nats
     ports:
-      - '4222:4222'
-      # - '8222:8222'
+      - "8222:8222"
+      - "4222:4222"  # Expose the NATS client port
+      - "6222:6222"  # Expose the NATS cluster port
+    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --http_port 8222"
     networks:
       - app-network
 
@@ -43,7 +35,21 @@ services:
     depends_on:
       - nats
     environment:
-      NATS_SERVER: 'nats://0.0.0.0:4222'
+      - NATS_SERVER=nats://nats:4222
+    networks:
+      - app-network
+    ports:
+      - "3001:3000"
+
+  email-service:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NATS_SERVER=nats://nats:4222
+    depends_on:
+      - nats
     networks:
       - app-network
 

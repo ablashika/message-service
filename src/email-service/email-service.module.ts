@@ -10,7 +10,7 @@ import { EmailController } from './email-service.controller';
         name: 'NATS_SERVICE',
         transport: Transport.NATS,
         options: {
-          url: 'nats://localhost:4222',
+          url: 'nats://nats:4222',
       },
     }
     ]),
