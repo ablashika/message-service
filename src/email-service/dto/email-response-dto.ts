@@ -2,14 +2,14 @@ import { IsOptional, IsString } from 'class-validator';
 
 export class EmailResponseDto {
   @IsString()
-  status: string;
+  status?: string;
 
   @IsOptional()
   @IsString()
   messageId?: string;
 
   @IsString()
-  message: string;
+  message?: string;
 
   @IsOptional()
   @IsString()

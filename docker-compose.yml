@@ -22,11 +22,19 @@
 
 
 services:
+  email-service:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    command: ["npm", "start"]
+  
   nats:
     image: nats:latest
     ports:
       - '4222:4222'
-      - '8222:8222'
+      # - '8222:8222'
     networks:
       - app-network
 
@@ -35,7 +43,7 @@ services:
     depends_on:
       - nats
     environment:
-      NATS_SERVER: 'nats://nats:4222'
+      NATS_SERVER: 'nats://0.0.0.0:4222'
     networks:
       - app-network
 

@@ -23,7 +23,7 @@ export class UserService {
     await this.client.emit('user_created', { email, userType }).toPromise();
    }
    catch(error){
-    this.logger.error('Error creating user:', error.message);
+    this.logger.error('Error creating user:',);
     throw error;
 
 

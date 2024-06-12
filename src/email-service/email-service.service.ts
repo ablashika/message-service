@@ -28,7 +28,7 @@ export class EmailService {
       await this.transporter.sendMail(mailOptions);
       this.logger.log('Email sent successfully');
     } catch (error) {
-      this.logger.error('Error sending email:', error.message);
+      this.logger.error('Error sending email:');
       throw error;
     }
   }
@@ -59,7 +59,7 @@ export class EmailService {
       await this.transporter.sendMail(mailOptions);
       this.logger.log('Email sent successfully');
     } catch (error) {
-      this.logger.error('Error sending email:', error.message);
+      this.logger.error('Error sending email:');
       throw error;
     }
   }
@@ -76,7 +76,7 @@ export class EmailService {
       await this.transporter.sendMail(mailOptions);
       this.logger.log('Merchat Email Approval sent successfully');
     } catch (error) {
-      this.logger.error('Error sending approval email:', error.message);
+      this.logger.error('Error sending approval email:');
       throw error;
     }
   }
@@ -92,7 +92,7 @@ export class EmailService {
       await this.transporter.sendMail(mailOptions);
       this.logger.log('Merchant dicline');
     } catch (error) {
-      this.logger.error('Error declining merchant:', error.message);
+      this.logger.error('Error declining merchant:');
       throw error;
     }
   }
@@ -109,7 +109,7 @@ export class EmailService {
       await this.transporter.sendMail(mailOptions);
       this.logger.log('cashout successful');
     } catch (error) {
-      this.logger.error('Error cashing out:', error.message);
+      this.logger.error('Error cashing out:');
       throw error;
     }
   }

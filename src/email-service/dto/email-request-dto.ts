@@ -3,16 +3,16 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 export class EmailRequestDto {
   @IsEmail()
   @IsNotEmpty()
-  to: string;
+  to?: string;
 
 
   @IsString()
   @IsNotEmpty()
-  subject: string;
+  subject?: string;
 
   @IsString()
   @IsNotEmpty()
-  text: string;
+  text?: string;
   
 
 }

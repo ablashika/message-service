@@ -6,6 +6,10 @@ COPY package*.json ./
 
 RUN npm install
 
+
+# Install TypeScript compiler globally
+RUN npm install -g typescript
+
 COPY . .
 
 RUN npm run build
