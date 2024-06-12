@@ -39,9 +39,21 @@ services:
     networks:
       - app-network
     ports:
-      - "3001:3000"
+      - "3002:3000"
 
   email-service:
+    build: .
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - NATS_SERVER=nats://nats:4222
+    depends_on:
+      - nats
+    networks:
+      - app-network
+
+  user-service:
     build: .
     ports:
       - "3000:3000"
