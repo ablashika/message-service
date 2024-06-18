@@ -10,11 +10,19 @@ export class EmailService {
       host: 'smtp.ethereal.email',
       port: 587,
       auth: {
-          user: 'anahi.donnelly@ethereal.email',
-          pass: '8UdYc4nwnTFbrgSjfg'
-      
-      },
-    });
+          user: 'trisha.vandervort23@ethereal.email',
+          pass: '7Eeysh9AmJTQ8qqPpX'
+      }
+  });
+  }
+
+  private createMailOptions(to: string, subject: string, text: string) {
+    return {
+      from: 'anahi.donnelly@ethereal.email',
+      to,
+      subject,
+      text,
+    };
   }
 
   async sendMail(email: string, subject: string, text: string) {
@@ -50,12 +58,7 @@ export class EmailService {
 
   async resetEmailPassword(to: string, subject: string, text: string) {
     try {
-      const mailOptions = {
-        from: 'anahi.donnelly@ethereal.email',
-        to,
-        subject,
-        text,
-      };
+      const mailOptions = this.createMailOptions(to, subject, text)    
       await this.transporter.sendMail(mailOptions);
       this.logger.log('Email sent successfully');
     } catch (error) {
@@ -67,12 +70,7 @@ export class EmailService {
 
   async merchantApprove(to: string, subject: string, text: string) {
     try {
-      const mailOptions = {
-        from: 'anahi.donnelly@ethereal.email',
-        to,
-        subject,
-        text,
-      };
+      const mailOptions = this.createMailOptions(to, subject, text)
       await this.transporter.sendMail(mailOptions);
       this.logger.log('Merchat Email Approval sent successfully');
     } catch (error) {
@@ -83,12 +81,7 @@ export class EmailService {
 
   async merchantDecline(to: string, subject: string, text: string) {
     try {
-      const mailOptions = {
-        from: 'anahi.donnelly@ethereal.email',
-        to,
-        subject,
-        text,
-      };
+      const mailOptions = this.createMailOptions(to, subject, text)
       await this.transporter.sendMail(mailOptions);
       this.logger.log('Merchant dicline');
     } catch (error) {
@@ -99,12 +92,7 @@ export class EmailService {
 
   async settlements(to: string, subject: string, text: string) {
     try {
-      const mailOptions = {
-        from: 'anahi.donnelly@ethereal.email',
-        to,
-        subject,
-        text,
-      };
+      const mailOptions = this.createMailOptions(to, subject, text)
       await this.transporter.sendMail(mailOptions);
       this.logger.log('settlements have been successful');
     } catch (error) {
@@ -116,12 +104,7 @@ export class EmailService {
 
   async cashOut(to: string, subject: string, text: string) {
     try {
-      const mailOptions = {
-        from: 'anahi.donnelly@ethereal.email',
-        to,
-        subject,
-        text,
-      };
+      const mailOptions = this.createMailOptions(to, subject, text)
       await this.transporter.sendMail(mailOptions);
       this.logger.log('cashout successful');
     } catch (error) {

@@ -1,11 +1,11 @@
 import { Module, Logger } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { EmailService } from 'src/email-service/email-service.service';
-import { AppService } from 'src/app.service';
+import { EmailService } from '../email-service/email-service.service';
+import { AppService } from '../app.service';
 import { ClientsModule,Transport  } from '@nestjs/microservices';
 import { HttpModule } from '@nestjs/axios'; 
-import { SmsService } from 'src/sms-service/sms-service.service';
+import { SmsService } from '../sms-service/sms-service.service';
 
 @Module({
   imports: [

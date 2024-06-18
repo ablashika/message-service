@@ -1,10 +1,8 @@
-import { Controller, Post, Body,Logger } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import { UserService } from './user.service';
 import { EmailService } from '../email-service/email-service.service';
 import { AppService } from './../app.service';
-import {SmsRequestDto, SmsResponseDto} from '../../src/sms-service/dto/sms.dto'
-import { HttpService } from '@nestjs/axios';
-import { from } from 'rxjs';
 
 @Controller('user')
 export class UserController {
@@ -12,15 +10,21 @@ export class UserController {
     private readonly userService: UserService,
     private readonly emailService: EmailService,
     private readonly appService: AppService,
-    private readonly logger: Logger,
-    private readonly httpService: HttpService,
   ) {}
 
+
+
+ //create user message
   @Post('create')
-  async createUser(@Body('email') email: string, @Body('userType') userType: string) {
+  async createUserHttp(@Body('email') email: string, @Body('userType') userType: string) {
+    return this.createUser({ email, userType });
+  }
+
+  @EventPattern('user.create')
+  async createUser(@Payload() data: { email: string; userType: string }) {
+    const { email, userType } = data;
     await this.userService.createUser(email, userType);
 
-    // Determine the welcome message based on usertype
     let emailSubject = 'Account Created Successfully';
     let emailText = 'Your account has been created successfully.';
 
@@ -30,63 +34,114 @@ export class UserController {
       emailText = 'Welcome, Admin! Your account has been created successfully.';
     }
 
-    // Send the email
     await this.emailService.sendMail(email, emailSubject, emailText);
-
     return { status: 'User created and email sent' };
   }
 
- 
+
+  //login message
   @Post('login')
-  async loginUser(@Body('phoneNumber') phoneNumber: string, message: string) {
-    await this.userService.loginUser(phoneNumber, message);
-    return { status: 'message sent successfully' };
+  async loginUserHttp(@Body('phoneNumber') phoneNumber: string, @Body('message') message: string) {
+    return this.loginUser({ phoneNumber, message });
   }
 
-   
+  @EventPattern('user.login')
+  async loginUser(@Payload() data: { phoneNumber: string; message: string }) {
+    const { phoneNumber, message } = data;
+    await this.userService.loginUser(phoneNumber, message);
+    return { status: 'Message sent successfully' };
+  }
+
+
+
+
+  //login-otp message
   @Post('login-otp')
-  async loginUserOtp(@Body('phoneNumber') to: string) {
-    await this.userService.loginUserSms(to);
+  async loginUserOtpHttp(@Body('phoneNumber') phoneNumber: string) {
+    return this.loginUserOtp({ phoneNumber });
+  }
+
+  @EventPattern('user.loginOtp')
+  async loginUserOtp(@Payload() data: { phoneNumber: string }) {
+    const { phoneNumber } = data;
+    await this.userService.loginUserSms(phoneNumber);
     return { status: 'OTP sent successfully' };
   }
 
 
+
+  //reset-password message
+
   @Post('reset-password')
-  async resetPassword(@Body('email') email: string) {
-     const resetLink = `https://yourapp.com/reset-password`;
+  async resetPasswordHttp(@Body('email') email: string) {
+    return this.resetPassword({ email });
+  }
+
+  @EventPattern('user.resetPassword')
+  async resetPassword(@Payload() data: { email: string }) {
+    const { email } = data;
+    const resetLink = `https://yourapp.com/reset-password`;
     await this.appService.sendPasswordResetEmail(email, resetLink);
     return { status: 'Password reset email sent' };
   }
 
-  
+
+
+  //merchant-approved message
   @Post('merchant-approved')
-  async merchantApproved(@Body('email') email: string, emailSubject:string) {
+  async merchantApprovedHttp(@Body('email') email: string, @Body('emailSubject') emailSubject: string) {
+    return this.merchantApproved({ email, emailSubject });
+  }
+
+  @EventPattern('user.merchantApproved')
+  async merchantApproved(@Payload() data: { email: string; emailSubject: string }) {
+    const { email, emailSubject } = data;
     await this.appService.merchantApproved(email);
-    return { status: 'merchant-approved' , emailSubject};
+    return { status: 'Merchant approved', emailSubject };
   }
 
 
+
+  //merchant decline message
   @Post('merchant-decline')
-  async merchantDeclined(@Body('email') email: string) {
-    await this.appService.merchantDeclined(email)
-    return { status: 'merchant declined'};
+  async merchantDeclinedHttp(@Body('email') email: string) {
+    return this.merchantDeclined({ email });
   }
 
+  @EventPattern('user.merchantDeclined')
+  async merchantDeclined(@Payload() data: { email: string }) {
+    const { email } = data;
+    await this.appService.merchantDeclined(email);
+    return { status: 'Merchant declined' };
+  }
+
+
+  //cahsout sucessgull message
 
   @Post('cash-out')
-  async cashout(@Body('email') email: string) {
-    await this.appService.cashOut(email)
-    return { status: 'cash out successful'};
+  async cashoutHttp(@Body('email') email: string) {
+    return this.cashout({ email });
   }
 
+  @EventPattern('user.cashOut')
+  async cashout(@Payload() data: { email: string }) {
+    const { email } = data;
+    await this.appService.cashOut(email);
+    return { status: 'Cash out successful' };
+  }
+
+
+
+  //settlement successful message 
   @Post('settlements')
-  async settlements(@Body('email') email: string) {
-    await this.appService.settlements(email)
-    return { status: 'settlement successful'};
+  async settlementsHttp(@Body('email') email: string) {
+    return this.settlements({ email });
   }
 
-
-
-
-  
+  @EventPattern('user.settlements')
+  async settlements(@Payload() data: { email: string }) {
+    const { email } = data;
+    await this.appService.settlements(email);
+    return { status: 'Settlement successful' };
+  }
 }
