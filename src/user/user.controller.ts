@@ -1,7 +1,10 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body,Logger } from '@nestjs/common';
 import { UserService } from './user.service';
-import { EmailService } from 'src/email-service/email-service.service';
-import { AppService } from 'src/app.service';
+import { EmailService } from '../email-service/email-service.service';
+import { AppService } from './../app.service';
+import {SmsRequestDto, SmsResponseDto} from '../../src/sms-service/dto/sms.dto'
+import { HttpService } from '@nestjs/axios';
+import { from } from 'rxjs';
 
 @Controller('user')
 export class UserController {
@@ -9,6 +12,8 @@ export class UserController {
     private readonly userService: UserService,
     private readonly emailService: EmailService,
     private readonly appService: AppService,
+    private readonly logger: Logger,
+    private readonly httpService: HttpService,
   ) {}
 
   @Post('create')
@@ -30,6 +35,21 @@ export class UserController {
 
     return { status: 'User created and email sent' };
   }
+
+ 
+  @Post('login')
+  async loginUser(@Body('phoneNumber') phoneNumber: string, message: string) {
+    await this.userService.loginUser(phoneNumber, message);
+    return { status: 'message sent successfully' };
+  }
+
+   
+  @Post('login-otp')
+  async loginUserOtp(@Body('phoneNumber') to: string) {
+    await this.userService.loginUserSms(to);
+    return { status: 'OTP sent successfully' };
+  }
+
 
   @Post('reset-password')
   async resetPassword(@Body('email') email: string) {
@@ -58,6 +78,13 @@ export class UserController {
     await this.appService.cashOut(email)
     return { status: 'cash out successful'};
   }
+
+  @Post('settlements')
+  async settlements(@Body('email') email: string) {
+    await this.appService.settlements(email)
+    return { status: 'settlement successful'};
+  }
+
 
 
 

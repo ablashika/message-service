@@ -4,9 +4,12 @@ import { UserController } from './user.controller';
 import { EmailService } from 'src/email-service/email-service.service';
 import { AppService } from 'src/app.service';
 import { ClientsModule,Transport  } from '@nestjs/microservices';
+import { HttpModule } from '@nestjs/axios'; 
+import { SmsService } from 'src/sms-service/sms-service.service';
 
 @Module({
   imports: [
+    HttpModule,
     ClientsModule.register([
       {
         name: 'NATS_SERVICE',
@@ -17,7 +20,7 @@ import { ClientsModule,Transport  } from '@nestjs/microservices';
     }
     ]),
   ],
-  providers: [UserService, EmailService, AppService,  Logger],
+  providers: [UserService, EmailService, AppService,  Logger, SmsService ],
   controllers: [UserController]
 })
 export class UserModule {}

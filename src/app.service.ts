@@ -67,7 +67,7 @@
 //     this.natsClient = ClientProxyFactory.create({
 //       transport: Transport.NATS,
 //       options: {
-//         servers: ['nats://localhost:'], 
+//         servers: ['nats://localhost:4222'], 
 //       },
 //     });
 //     await this.natsClient.connect();
@@ -113,7 +113,7 @@ export class AppService implements OnModuleInit {
     this.natsClient = ClientProxyFactory.create({
       transport: Transport.NATS,
       options: {
-        servers: ['nats://nats:4222'], 
+         servers: ['nats://nats:4222'],
       },
     });
     await this.natsClient.connect();
@@ -195,5 +195,31 @@ Your Company Name`;
     throw error;
   }
 }
+
+
+
+async settlements(email: string) {
+  const subject = 'Bank Transfer Success';
+ const text = `Dear Merchant,
+ Settlement was successful
+
+ Please feel free to reach out to us if you have any questions or if you believe this decision was made in error.
+
+ Best regards,
+ Your Company Name
+ `;
+
+try {
+  await this.emailService.cashOut(email, subject,text);
+  this.logger.log('settlement successfull');
+} catch (error) {
+  this.logger.error('settlement failed', error.message);
+  throw error;
 }
+}
+
+}
+
+
+
 

@@ -97,6 +97,22 @@ export class EmailService {
     }
   }
 
+  async settlements(to: string, subject: string, text: string) {
+    try {
+      const mailOptions = {
+        from: 'anahi.donnelly@ethereal.email',
+        to,
+        subject,
+        text,
+      };
+      await this.transporter.sendMail(mailOptions);
+      this.logger.log('settlements have been successful');
+    } catch (error) {
+      this.logger.error('settlements have been declined:');
+      throw error;
+    }
+  }
+
 
   async cashOut(to: string, subject: string, text: string) {
     try {

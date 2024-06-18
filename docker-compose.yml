@@ -41,6 +41,19 @@ services:
     ports:
       - "3002:3000"
 
+  sms-service:
+    build: .
+    depends_on:
+      - nats
+    environment:
+      - INFOBIP_API_KEY=e18342dcd01bf02f58eea5bf75fd1ab2-4a65a0d7-9c0f-44e5-8556-dbf1f8134cb7
+      - INFOBIP_BASE_URL=https://api.infobip.com
+    ports:
+      - "3003:3000"  
+    networks:
+      - app-network
+    
+
   email-service:
     build: .
     ports:
@@ -64,6 +77,7 @@ services:
       - nats
     networks:
       - app-network
+      
 
 networks:
   app-network:
