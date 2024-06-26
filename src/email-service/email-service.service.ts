@@ -1,24 +1,30 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { ClientProxy, ClientProxyFactory } from '@nestjs/microservices';
+import { natsConfig } from '../config/config';
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
+  private client: ClientProxy;
   private transporter;
 
-  constructor(private readonly logger: Logger) {
+  constructor() {
     this.transporter = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,
       auth: {
-          user: 'trisha.vandervort23@ethereal.email',
-          pass: '7Eeysh9AmJTQ8qqPpX'
+        user: 'mohammed30@ethereal.email',
+        pass: 'YTHcgWJhUNQZwcQnDD'
       }
-  });
+    });
+
+    this.client = ClientProxyFactory.create(natsConfig);
   }
 
   private createMailOptions(to: string, subject: string, text: string) {
     return {
-      from: 'anahi.donnelly@ethereal.email',
+      from: 'mohammed30@ethereal.email',
       to,
       subject,
       text,
@@ -27,92 +33,48 @@ export class EmailService {
 
   async sendMail(email: string, subject: string, text: string) {
     try {
-      const mailOptions = {
-        from: 'anahi.donnelly@ethereal.email',
-        to: email,
-        subject: subject,
-        text: text,
-      };
+      
+      const mailOptions = this.createMailOptions(email, subject, text);
       await this.transporter.sendMail(mailOptions);
       this.logger.log('Email sent successfully');
     } catch (error) {
-      this.logger.error('Error sending email:');
+      this.logger.error('Error sending email:', error);
       throw error;
     }
   }
 
-  async sendWelcomeEmail(email: string, userType: string) {
-    let subject, text;
-    if (userType === 'merchant') {
-      subject = 'Welcome Merchant';
-      text = 'Welcome to our platform, esteemed merchant!';
-    } else if (userType === 'admin') {
-      subject = 'Welcome Admin';
-      text = 'Welcome to our platform, respected admin!';
-    } else {
-      subject = 'Welcome';
-      text = 'Welcome to our platform!';
-    }
+  async resetEmailPassword(email: string, resetLink: string) {
+    const subject = 'Password Reset Request';
+    const text = `Click the link to reset your password: ${resetLink}`;
     await this.sendMail(email, subject, text);
+    await this.client.emit('password_reset', { email, resetLink }).toPromise();
   }
 
-  async resetEmailPassword(to: string, subject: string, text: string) {
-    try {
-      const mailOptions = this.createMailOptions(to, subject, text)    
-      await this.transporter.sendMail(mailOptions);
-      this.logger.log('Email sent successfully');
-    } catch (error) {
-      this.logger.error('Error sending email:');
-      throw error;
-    }
+  async merchantApprove(email: string) {
+    const subject = 'Merchant Approved';
+    const text = 'Congratulations! Your merchant application has been approved.';
+    await this.sendMail(email, subject, text);
+    await this.client.emit('merchant_approved', { email, subject, text }).toPromise();
   }
 
-
-  async merchantApprove(to: string, subject: string, text: string) {
-    try {
-      const mailOptions = this.createMailOptions(to, subject, text)
-      await this.transporter.sendMail(mailOptions);
-      this.logger.log('Merchat Email Approval sent successfully');
-    } catch (error) {
-      this.logger.error('Error sending approval email:');
-      throw error;
-    }
+  async merchantDecline(email: string) {
+    const subject = 'Merchant Application Declined';
+    const text = `We regret to inform you that your merchant application has been declined.`;
+    await this.sendMail(email, subject, text);
+    await this.client.emit('merchant_declined', { email, subject, text }).toPromise();
   }
 
-  async merchantDecline(to: string, subject: string, text: string) {
-    try {
-      const mailOptions = this.createMailOptions(to, subject, text)
-      await this.transporter.sendMail(mailOptions);
-      this.logger.log('Merchant dicline');
-    } catch (error) {
-      this.logger.error('Error declining merchant:');
-      throw error;
-    }
+  async cashOut(email: string) {
+    const subject = 'Cash Out Successful';
+    const text = `Cash-out was successful.`;
+    await this.sendMail(email, subject, text);
+    await this.client.emit('cash_out', { email, subject, text }).toPromise();
   }
 
-  async settlements(to: string, subject: string, text: string) {
-    try {
-      const mailOptions = this.createMailOptions(to, subject, text)
-      await this.transporter.sendMail(mailOptions);
-      this.logger.log('settlements have been successful');
-    } catch (error) {
-      this.logger.error('settlements have been declined:');
-      throw error;
-    }
+  async settlements(email: string) {
+    const subject = 'Bank Transfer Success';
+    const text = `Settlement was successful.`;
+    await this.sendMail(email, subject, text);
+    await this.client.emit('settlements', { email, subject, text }).toPromise();
   }
-
-
-  async cashOut(to: string, subject: string, text: string) {
-    try {
-      const mailOptions = this.createMailOptions(to, subject, text)
-      await this.transporter.sendMail(mailOptions);
-      this.logger.log('cashout successful');
-    } catch (error) {
-      this.logger.error('Error cashing out:');
-      throw error;
-    }
-  }
-  
 }
-
-

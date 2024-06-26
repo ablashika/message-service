@@ -1,43 +1,43 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller} from '@nestjs/common';
 import { AppService } from './app.service';
 import { EmailRequestDto } from './email-service/dto/email-request-dto';
 import { EmailResponseDto } from './email-service/dto/email-response-dto';
-import { Subject } from 'rxjs';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
  
-  @Post('send-email')
-  async sendEmail(@Body() emailRequest: EmailRequestDto): Promise<EmailResponseDto> {
+  @MessagePattern('user_created')
+  async handleUserCreated(@Payload() data: { email: string, userType: string }): Promise<{ status: string }> {
+    try {
+      await this.appService.createUser(data.email, data.userType);
+      return { status: 'User created successfully' };
+    } catch (error) {
+      return { status: 'Error creating user' };
+    }
+  }
+  @MessagePattern('send-email')
+  async sendEmail(@Payload() emailRequest: EmailRequestDto): Promise<EmailResponseDto> {
     return this.appService.sendEmail(emailRequest);
   }
 
-@Post('reset-password')
-async resetPassword(@Body('email') email: string) {
-  const resetLink = `https://yourapp.com/reset-password?email=${email}&token=someRandomToken`; // Generate a reset link
-  await this.appService.sendPasswordResetEmail(email, resetLink);
-  return { status: 'Password reset email sent' };
+  @EventPattern('reset-password')
+  async resetPassword(@Payload() data: { email: string }) {
+    const resetLink = `https://yourapp.com/reset-password?email=${data.email}`;
+    console.log(data) 
+    await this.appService.sendPasswordResetEmail(data.email, resetLink);
+  }
+
+  @EventPattern('merchant-approval')
+  async merchantApproval(@Payload() data: { email: string }) {
+    await this.appService.merchantApproved(data.email);
+  }
+
+  @EventPattern('merchant-decline')
+  async merchantDecline(@Payload() data: { email: string }) {
+    await this.appService.merchantDeclined(data.email);
+  }
 }
-
-
-@Post('merchant-approval')
-async merchantApproval(@Body('email') email:string) {
-
-  await this.appService.merchantApproved(email);
-  return { status: 'Password reset email sent' };
-}
-
-
-@Post('merchant-decline')
-async merchantDecline(@Body('email') email: string ){
-  await this.appService.merchantDeclined(email);
-  return { status: 'Merchant decline email sent' };
-}
-
-
-
-
-}
-
 

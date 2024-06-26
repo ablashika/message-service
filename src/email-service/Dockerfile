@@ -10,6 +10,8 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+RUN npm install -g nodemon
+
 # Copy the entire project
 COPY . .
 
@@ -32,4 +34,4 @@ COPY --from=builder /usr/src/app/dist ./dist
 RUN npm install --production
 
 # Command to run the application
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start:dev"]
